@@ -2,7 +2,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Scanner;
 
 /**
  * Autocorrect
@@ -44,13 +46,20 @@ public class Autocorrect {
 
         // Cap the threshold so no word with a distance greater than or equal to 4 is suggested
         int newThreshold = threshold;
-        if (newThreshold > 3) {
-            newThreshold = 3;
+        if (newThreshold > 2) {
+            newThreshold = 2;
         }
 
 
         // Loop through every dictionary word
         for (String word : words) {
+
+            // Skip words that do not start with the same first letter to remove any words that are not similar early
+            if (typed.length() > 0 && word.length() > 0) {
+                if (typed.charAt(0) != word.charAt(0)) {
+                    continue; // move to next word
+                }
+            }
 
             // Compute the edit distance between dictionary word and typed word
             int distance = editDistance(word, typed);
@@ -76,9 +85,15 @@ public class Autocorrect {
         // Then sort by the edit distance using built java method
         matches.sort(Comparator.comparingInt(Pair::getDistance));
 
+        // Only return the top 4 matches
+        int resultSize = matches.size();
+        if (resultSize > 4) {
+            resultSize = 4;
+        }
+
         // Convert ArrayList in array of strings
-        String[] result = new String[matches.size()];
-        for (int i = 0; i < matches.size(); i++) {
+        String[] result = new String[resultSize];
+        for (int i = 0; i < resultSize; i++) {
             result[i] = matches.get(i).getWord();
         }
 
@@ -137,6 +152,7 @@ public class Autocorrect {
     // Helper method that checks if two words share at least 1 consecutive sequence of 2 letters
     private boolean sequence(String typedWord, String dictionaryWord) {
 
+        int matches = 0;
         // Loop through all 2 letter sequences in typed word
         for (int typedIndex = 0; typedIndex < typedWord.length() - 1; typedIndex++) {
 
@@ -148,7 +164,11 @@ public class Autocorrect {
 
                 // If any sequences match then return true
                 if (typedSequence.equals(dictionarySequence)) {
-                    return true;
+                    matches++;
+                    if(matches >= 2) {
+                        return true;
+                    }
+                    break;
                 }
             }
         }
@@ -181,6 +201,20 @@ public class Autocorrect {
         }
         catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    // New main method to test algorithm in terminal
+    public static void main(String[] args){
+        String[] words = loadDictionary("large");
+
+        Autocorrect autocorrect = new Autocorrect(words, 5);
+
+        Scanner s = new Scanner(System.in);
+        String word;
+        while(true){
+            word = s.nextLine();
+            System.out.println(Arrays.toString(autocorrect.runTest(word)));
         }
     }
 }
