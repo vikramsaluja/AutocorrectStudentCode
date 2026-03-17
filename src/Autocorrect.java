@@ -61,7 +61,7 @@ public class Autocorrect {
                 // Only apply the 2 letter sequence check for longer words
                 if (typed.length() > 4 && word.length() > 4) {
                     // Only add if the words share a common sequence of 2 letters
-                    if (hasCommonSequence(typed, word)) {
+                    if (sequence(typed, word)) {
                         matches.add(new Pair(word, distance));
                     }
                 } else {
@@ -135,7 +135,7 @@ public class Autocorrect {
 
 
     // Helper method that checks if two words share at least 1 consecutive sequence of 2 letters
-    private boolean hasCommonSequence(String typedWord, String dictionaryWord) {
+    private boolean sequence(String typedWord, String dictionaryWord) {
 
         // Loop through all 2 letter sequences in typed word
         for (int typedIndex = 0; typedIndex < typedWord.length() - 1; typedIndex++) {

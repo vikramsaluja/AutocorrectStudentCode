@@ -1,4 +1,5 @@
 public class Pair {
+
     String word;
     int distance;
 

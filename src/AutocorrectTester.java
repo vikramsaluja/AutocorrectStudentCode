@@ -60,7 +60,6 @@ public class AutocorrectTester {
             // Update instance variables with test data
             int n = Integer.parseInt(line);
             String[] words = new String[n];
-
             for (int i = 0; i < n; i++) {
                 line = br.readLine();
                 words[i] = line;
